@@ -13,7 +13,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
 
-  // @TODO1 IMPLEMENT A RESTFUL ENDPOINT
+  // IMPLEMENT A RESTFUL ENDPOINT
   // GET /filteredimage?image_url={{URL}}
   // endpoint to filter an image from a public url.
   // IT SHOULD
@@ -29,7 +29,25 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
   /**************************************************************************** */
 
-  //! END @TODO1
+  app.get( "/filteredimage", async ( req, res ) => {
+
+    let { image_url } = req.query;
+
+    if (!image_url) {
+        return res.status(400).send(`image_url is required`);
+    }
+
+    let filtered_path: string = await filterImageFromURL(image_url);
+
+    res.sendFile(filtered_path, (err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        deleteLocalFiles([filtered_path]);
+      }
+    });
+
+  } );
   
   // Root Endpoint
   // Displays a simple message to the user
